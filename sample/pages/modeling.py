@@ -57,8 +57,8 @@ st.write('---')
 
 st.write('### Data Visualization')
 
-agg_method = st.selectbox('Select aggregation method', ['Average', 'Count'])
-selected_col = st.selectbox('Select a column for visualization', numeric_columns)
+agg_method = st.selectbox('Select aggregation method', ['Average', 'Count']) # 리스트를 내부에 직접 설정
+selected_col = st.selectbox('Select a column for visualization', numeric_columns) # 리스트를 변수로 받아서 설정
 
 if agg_method == 'Average':
     city_agg = df.groupby('City')[selected_col].mean().reset_index()
@@ -85,21 +85,21 @@ elif agg_method == 'Count':
 # Pydeck 차트
 st.pydeck_chart(pdk.Deck(
     map_style="mapbox://styles/mapbox/light-v9",
-    initial_view_state=pdk.ViewState(latitude=19.7633, longitude=96.0785, zoom=5, pitch=70),
+    initial_view_state=pdk.ViewState(latitude=19.7633, longitude=96.0785, zoom=5, pitch=70), # 초기 위,경도, 확대 정도, 각도
     layers=[
         pdk.Layer(
-            'HexagonLayer',
+            'HexagonLayer', # 모양 그래프 설정
             data=city_agg,
             get_position='[Longitude, Latitude]',
-            get_elevation='elevation',  # 여기서 동적으로 높이를 조절합니다
+            get_elevation='elevation',  # 동적 높이 설정
             elevation_scale=50000,  # 높이 스케일 조절
             elevation_range=[0, 300000],  # 최소 및 최대 높이 범위
             radius=20000,  # 헥사곤 반경
-            extruded=True,  # 3D 헥사곤 사용
+            extruded=True,  # 3D 헥사곤 사용 여부
             pickable=True,
         ),
         pdk.Layer(
-            "TextLayer",
+            "TextLayer", # text 사용 여부
             data=city_agg,
             get_position='[Longitude, Latitude]',
             get_text='Label',

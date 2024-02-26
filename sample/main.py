@@ -17,11 +17,11 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded")
 
-alt.themes.enable("dark")
+alt.themes.enable("dark") # 테마 설정 
 
 
-with st.sidebar:
-    st.title('🏂 US Population Dashboard')
+with st.sidebar: # side bar 만들기
+    st.title('🏂 US Population Dashboard') # web page name
     
     year_list = list(df_reshaped.year.unique())[::-1]
     
@@ -30,15 +30,15 @@ with st.sidebar:
     df_selected_year_sorted = df_selected_year.sort_values(by="population", ascending=False)
 
     color_theme_list = ['blues', 'cividis', 'greens', 'inferno', 'magma', 'plasma', 'reds', 'rainbow', 'turbo', 'viridis']
-    selected_color_theme = st.selectbox('Select a color theme', color_theme_list)
+    selected_color_theme = st.selectbox('Select a color theme', color_theme_list) # 선택 박스 만들기 // page에 보일 이름, 선택할 리스트
 
 
 
-col = st.columns((1.5, 4.5, 2), gap='medium')
+col = st.columns((1.5, 4.5, 2), gap='medium') # page slice 기능 () 내부에 원하는 사이즈로 설정
 
 
 
-with col[0]:
+with col[0]: # 첫번째 컬럼
     st.markdown('#### Gains/Losses')
 
     df_population_difference_sorted = calculate_population_difference(df_reshaped, selected_year)
@@ -84,8 +84,9 @@ with col[0]:
         donut_chart_greater = make_donut(states_migration_greater, 'Inbound Migration', 'green')
         donut_chart_less = make_donut(states_migration_less, 'Outbound Migration', 'red')
 
-    migrations_col = st.columns((0.2, 1, 0.2))
-    with migrations_col[1]:
+    migrations_col = st.columns((0.2, 1, 0.2)) # row 설정
+    
+    with migrations_col[1]: # 첫번째 col 두번째 row
         st.write('Inbound')
         st.altair_chart(donut_chart_greater)
         st.write('Outbound')
@@ -93,7 +94,7 @@ with col[0]:
 
 
 
-with col[1]:
+with col[1]: # 두번째 col
     st.markdown('#### Total Population')
     
     choropleth = make_choropleth(df_selected_year, 'states_code', 'population', selected_color_theme)
@@ -104,7 +105,7 @@ with col[1]:
 
 
 
-with col[2]:
+with col[2]: # 세번째 col
     st.markdown('#### Top States')
 
     st.dataframe(df_selected_year_sorted.iloc[:,1:], width=1000)
