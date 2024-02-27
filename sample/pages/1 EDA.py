@@ -117,3 +117,95 @@ st.pydeck_chart(pdk.Deck(
 
 st.write('---')
 
+select_col_plot = st.selectbox('Select column for visualization', numeric_columns)
+
+st.write('### Line')
+
+line_chart = alt.Chart(df).mark_line().encode(
+    x = 'Date', # x축 설정
+    y = select_col_plot, # y축은 위에서 선택한 변수 받아와서 시각화
+    color = 'City'
+).properties(
+    width=1600,
+    height=400
+)
+
+st.write(line_chart)
+
+
+st.write('### Histogram')
+
+
+hist = alt.Chart(df).mark_bar().encode(
+    x=alt.X(select_col_plot, bin=True),
+    y='count()',
+    color='City'
+).properties(
+    width=1600,
+    height=400
+)
+
+# hist = px.histogram(df, x=select_col_plot, nbins=20, title='Histogram')
+
+st.write(hist)
+
+st.write('### Area')
+
+area_chart = alt.Chart(df).mark_area().encode(
+    x = 'Date',
+    y = select_col_plot,
+    color = 'City'
+).properties(
+    width=1600,
+    height=400
+)
+
+st.write(area_chart)
+
+
+st.write('---')
+
+st.write('## PCA')
+
+# 데이터 표준화
+scaler = StandardScaler()
+
+X = df[numeric_columns].dropna() # numeric columns만 추출 후 결측치 제거
+X = scaler.fit_transform(X) # 표준화
+
+pca = PCA(n_components=2) # 2차원으로 축소
+X_pca = pca.fit_transform(X) # pca 진행
+
+pca_df = pd.DataFrame(X_pca, columns=['PC1', 'PC2'])
+pca_df['City'] = df['City']
+
+st.dataframe(pca_df.T, height=200)
+
+st.write('### PCA Scatter')
+
+scatter = alt.Chart(pca_df).mark_circle().encode(
+    x='PC1',
+    y='PC2',
+    color='City'
+).properties(
+    width=1600,
+    height=800
+)
+
+st.write(scatter)
+
+st.write('---')
+
+st.markdown('### :green[Modeling을 위한 column 선택]')
+
+x_col = st.multiselect('Select columns for modeling', numeric_columns)
+y_col = st.selectbox('Select a target column', df.columns)
+
+
+st.write('다음 페이지에서 모델링을 수행하기 위해 선택한 column을 저장합니다.')
+
+
+if st.button('Save'):
+    st.session_state['x_col'] = df[x_col]
+    st.session_state['y_col'] = df[y_col]
+
