@@ -3,15 +3,12 @@ import pandas as pd
 import numpy as np
 import altair as alt
 import plotly.express as px
-import os
+import matplotlib.pyplot as plt
 from function.function import *
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 import pydeck as pdk
-
-
+import seaborn as sns
 
 df = pd.read_csv('./data/supermarket_sales.csv')
 
@@ -81,7 +78,6 @@ elif agg_method == 'Count':
     city_agg['radius'] = city_agg['Count'] * scale_factor
     city_agg['elevation'] = city_agg['Count'] * elevation_factor
 
-
 # Pydeck 차트
 st.pydeck_chart(pdk.Deck(
     map_style="mapbox://styles/mapbox/light-v9",
@@ -121,46 +117,50 @@ select_col_plot = st.selectbox('Select column for visualization', numeric_column
 
 st.write('### Line')
 
-line_chart = alt.Chart(df).mark_line().encode(
-    x = 'Date', # x축 설정
-    y = select_col_plot, # y축은 위에서 선택한 변수 받아와서 시각화
-    color = 'City'
-).properties(
-    width=1600,
-    height=400
-)
+if st.checkbox('Line Plot'):
+    fig, ax = plt.subplots(figsize=(16, 4))
 
-st.write(line_chart)
+    # 각 도시별로 데이터 필터링 후, 선 그래프 그리기
+    for city in df['City'].unique():
+        df_city = df[df['City'] == city]
+        ax.plot(df_city.index, df_city[select_col_plot], label=city)
+
+    ax.set_xlabel('Date')
+    ax.set_ylabel(select_col_plot)
+    ax.set_title(f'Line Chart of {select_col_plot} Over Time by City')
+    ax.legend()
+
+    # Streamlit으로 차트 표시
+    st.pyplot(fig)
 
 
 st.write('### Histogram')
 
+if st.checkbox('Hist Plot'):
+    hist = alt.Chart(df).mark_bar().encode(
+        x=alt.X(select_col_plot, bin=True),
+        y=select_col_plot,
+        color='City'
+    ).properties(
+        width=1600,
+        height=400
+    )
 
-hist = alt.Chart(df).mark_bar().encode(
-    x=alt.X(select_col_plot, bin=True),
-    y='count()',
-    color='City'
-).properties(
-    width=1600,
-    height=400
-)
+    # hist = px.histogram(df, x=select_col_plot, nbins=20, title='Histogram')
 
-# hist = px.histogram(df, x=select_col_plot, nbins=20, title='Histogram')
-
-st.write(hist)
+    st.write(hist)
 
 st.write('### Area')
 
-area_chart = alt.Chart(df).mark_area().encode(
-    x = 'Date',
-    y = select_col_plot,
-    color = 'City'
-).properties(
-    width=1600,
-    height=400
-)
-
-st.write(area_chart)
+if st.checkbox('Area Plot'):
+    area_chart = px.area(df, 
+                         x="Date", 
+                         y=select_col_plot,  
+                         color="City",  # 'City'는 범주형 데이터로 색상 구분에 사용
+                         title="Area Plot by City")
+    
+    # Streamlit에서 플롯 표시
+    st.plotly_chart(area_chart, use_container_width=True)
 
 
 st.write('---')
@@ -183,16 +183,19 @@ st.dataframe(pca_df.T, height=200)
 
 st.write('### PCA Scatter')
 
-scatter = alt.Chart(pca_df).mark_circle().encode(
-    x='PC1',
-    y='PC2',
-    color='City'
-).properties(
-    width=1600,
-    height=800
-)
+if st.checkbox('PCA 시각화'):
+    sns.set_theme(style="whitegrid")
 
-st.write(scatter)
+    plt.figure(figsize=(20, 10))
+    scatter_plot = sns.scatterplot(data=pca_df, x='PC1', y='PC2', hue='City', palette='deep', s=100)
+    
+    scatter_plot.set_title('PCA Visualization')
+    scatter_plot.set_xlabel('PC1')
+    scatter_plot.set_ylabel('PC2')
+    plt.legend(title='City', bbox_to_anchor=(1.05, 1), loc='upper left')
+    
+    plt.tight_layout()
+    st.pyplot(plt)
 
 st.write('---')
 

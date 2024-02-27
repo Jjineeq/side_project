@@ -1,12 +1,7 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import altair as alt
-import plotly.express as px
-import os
 from function.function import *
-
-
 
 df = pd.read_csv('https://raw.githubusercontent.com/dataprofessor/dashboard-v3/master/data/us-population-2010-2019.csv')
 df_reshaped = pd.read_csv('./data/us-population-2010-2019-reshaped.csv')
@@ -19,10 +14,7 @@ st.set_page_config(
 
 alt.themes.enable("dark") # 테마 설정 
 
-
 with st.sidebar: # side bar 만들기
-    st.title('🏂 US Population Dashboard') # web page name
-    
     year_list = list(df_reshaped.year.unique())[::-1]
     
     selected_year = st.selectbox('Select a year', year_list, index=len(year_list)-1)
@@ -33,9 +25,7 @@ with st.sidebar: # side bar 만들기
     selected_color_theme = st.selectbox('Select a color theme', color_theme_list) # 선택 박스 만들기 // page에 보일 이름, 선택할 리스트
 
 
-
 col = st.columns((1.5, 4.5, 2), gap='medium') # page slice 기능 () 내부에 원하는 사이즈로 설정
-
 
 
 with col[0]: # 첫번째 컬럼
@@ -92,8 +82,6 @@ with col[0]: # 첫번째 컬럼
         st.write('Outbound')
         st.altair_chart(donut_chart_less)
 
-
-
 with col[1]: # 두번째 col
     st.markdown('#### Total Population')
     
@@ -102,8 +90,6 @@ with col[1]: # 두번째 col
     
     heatmap = make_heatmap(df_reshaped, 'year', 'states', 'population', selected_color_theme)
     st.altair_chart(heatmap, use_container_width=True)
-
-
 
 with col[2]: # 세번째 col
     st.markdown('#### Top States')

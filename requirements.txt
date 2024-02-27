@@ -3,3 +3,6 @@ pandas
 numpy
 streamlit
 plotly
+pydeck
+matplotlib
+seaborn
