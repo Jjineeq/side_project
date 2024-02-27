@@ -13,7 +13,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.decomposition import PCA
 
 
-@st.cache_resource
+@st.cache_resource # 캐시 사용해서 학습한 모델 저장 // 함수로 만든 코드만 가능
 def random_forest_fit(X_train, X_test, y_train, y_test, n_estimators, max_depth, min_samples_split):
     rf = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, min_samples_split=min_samples_split)
     rf.fit(X_train, y_train)
@@ -21,7 +21,7 @@ def random_forest_fit(X_train, X_test, y_train, y_test, n_estimators, max_depth,
 
 
 
-try:
+try: # 데이터 불러오기
     col = st.columns((1, 1), gap='small') # page slice 기능 () 내부에 원하는 사이즈로 설정
 
 
@@ -48,13 +48,12 @@ try:
 
     X_train, X_test, y_train, y_test = train_test_split(x_data, y_data, test_size = test_size, random_state = 42)
 
-    n_estimators = int(st.text_input('n_estimators', value=100))
-    max_depth = st.select_slider('max_depth', options=[None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    n_estimators = int(st.text_input('n_estimators', value=100)) # 모델 파라미터 설정
+    max_depth = st.select_slider('max_depth', options=[None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) # 모델 파라미터 설정
+    min_samples_split = int(st.slider('min_samples_split', min_value=2, max_value=10, value=2)) # 모델 파라미터 설정
 
-    min_samples_split = int(st.slider('min_samples_split', min_value=2, max_value=10, value=2))
 
-
-    if st.checkbox('RF Classifier fit'):
+    if st.checkbox('RF Classifier fit'): # check box를 사용하여 학습 진행 여부 선택 -> 페이지 속도 향상
         rf = random_forest_fit(X_train, X_test, y_train, y_test, n_estimators, max_depth, min_samples_split)
 
     if st.checkbox('RF Classifier predict'):
