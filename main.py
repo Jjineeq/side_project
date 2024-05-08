@@ -97,3 +97,12 @@ with col[2]: # 세번째 col
     st.dataframe(df_selected_year_sorted.iloc[:,1:], width=1000)
 
     st.bar_chart(df_selected_year_sorted.set_index('states').population)
+    
+import os
+
+if __name__ == '__main__':
+    if 'RUNNING_IN_STREAMLIT' not in os.environ:
+        os.environ['RUNNING_IN_STREAMLIT'] = 'True'
+        os.system("streamlit run main.py")
+    else:
+        print("Streamlit is running main.py!")
