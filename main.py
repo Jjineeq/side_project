@@ -1,11 +1,16 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+
+# function 폴더에 있는 functon.py 파일에 있는 함수들을 호출함
 from function.function import *
 
+# 데이터 불러오기 // 링크도 가능하고, 실제 있는 데이터 import도 가능함
+# 링크로 불러올 경우 인터넷 연결 확인
 df = pd.read_csv('https://raw.githubusercontent.com/dataprofessor/dashboard-v3/master/data/us-population-2010-2019.csv')
 df_reshaped = pd.read_csv('./data/us-population-2010-2019-reshaped.csv')
 
+# 페이지 설정
 st.set_page_config(
     page_title="US Population Dashboard",
     page_icon="🏂",
@@ -17,9 +22,9 @@ alt.themes.enable("dark") # 테마 설정
 with st.sidebar: # side bar 만들기
     year_list = list(df_reshaped.year.unique())[::-1]
     
-    selected_year = st.selectbox('Select a year', year_list, index=len(year_list)-1)
-    df_selected_year = df_reshaped[df_reshaped.year == selected_year]
-    df_selected_year_sorted = df_selected_year.sort_values(by="population", ascending=False)
+    selected_year = st.selectbox('Select a year', year_list, index=len(year_list)-1) # 선택 박스 만들기 // page에 보일 이름, 선택할 리스트
+    df_selected_year = df_reshaped[df_reshaped.year == selected_year] # 선택한 연도만 추출
+    df_selected_year_sorted = df_selected_year.sort_values(by="population", ascending=False) # 설정한 col에 따라 정렬
 
     color_theme_list = ['blues', 'cividis', 'greens', 'inferno', 'magma', 'plasma', 'reds', 'rainbow', 'turbo', 'viridis']
     selected_color_theme = st.selectbox('Select a color theme', color_theme_list) # 선택 박스 만들기 // page에 보일 이름, 선택할 리스트
@@ -31,7 +36,7 @@ col = st.columns((1.5, 4.5, 2), gap='medium') # page slice 기능 () 내부에 �
 with col[0]: # 첫번째 컬럼
     st.markdown('#### Gains/Losses')
 
-    df_population_difference_sorted = calculate_population_difference(df_reshaped, selected_year)
+    df_population_difference_sorted = calculate_population_difference(df_reshaped, selected_year) # 사전 정의 함수 사용
 
     if selected_year > 2010:
         first_state_name = df_population_difference_sorted.states.iloc[0]
